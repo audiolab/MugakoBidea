@@ -167,12 +167,11 @@ public class SoundPoint extends Location {
 
     public SoundPoint(Location l) {
         super(l);
-        // TODO Auto-generated constructor stub
+
     }
 
     public SoundPoint(String provider) {
         super(provider);
-        // TODO Auto-generated constructor stub
     }
 
     public SoundPoint(Context mContext){
@@ -321,13 +320,10 @@ public class SoundPoint extends Location {
             this.mp.prepare();
             this.mp.setLooping(false);
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -386,13 +382,10 @@ public class SoundPoint extends Location {
             this.mp.prepare();
             this.mp.setLooping(false);
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -452,13 +445,10 @@ public class SoundPoint extends Location {
             this.mp.prepareAsync();
             this.mp.setLooping(false);
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IllegalStateException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

@@ -216,7 +216,6 @@ public class Walking extends Activity{
         private WeakReference<Paseo> walk;
 
         public void onLocationChanged(Location location) {
-            // TODO Auto-generated method stub
             if (location != null) {
                 ((TextView)findViewById(R.id.logger)).append(" Posición: " + location.getLatitude() + " / " + location.getLongitude() + " / " + location.getAccuracy());
                 //((TextView)findViewById(R.id.status_gps)).setVisibility(View.GONE);
@@ -239,7 +238,6 @@ public class Walking extends Activity{
         }
 
         public void onProviderDisabled(String provider) {
-            // TODO Auto-generated method stub
             ((TextView)findViewById(R.id.logger)).append(provider + " desconectado");
             Log.d("AREAGO","GPS Disable");
             //((TextView)findViewById(R.id.logger)).setText("Dispositivo GPS desactivado");
@@ -249,7 +247,6 @@ public class Walking extends Activity{
         }
 
         public void onProviderEnabled(String provider) {
-            // TODO Auto-generated method stub
             ((TextView)findViewById(R.id.logger)).append("GPS Conectado: " + provider);
             //((TextView)findViewById(R.id.status_gps)).setText("Dispositivo GPS activado");
             //((TextView)findViewById(R.id.status_gps)).setVisibility(View.VISIBLE);
@@ -257,7 +254,6 @@ public class Walking extends Activity{
         }
 
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            // TODO Auto-generated method stub
             String st = "";
             Paseo w = walk.get();
             switch (status) {

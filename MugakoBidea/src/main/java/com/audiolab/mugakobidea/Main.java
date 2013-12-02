@@ -114,7 +114,7 @@ public class Main extends Activity {
             updateWalksToDB(toUpdate);
             addWalksToDB(toAdd);
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 
@@ -166,7 +166,6 @@ public class Main extends Activity {
         return false;
     }
     private boolean isGPSEnabled() {
-        // TODO Auto-generated method stub
 
         LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if ( !locManager.isProviderEnabled("gps") ) return false;
@@ -208,7 +207,7 @@ public class Main extends Activity {
                         selectionArgs);
             }//for
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
             Log.d("AREAGO", "Error en la base de datos");
         }
@@ -235,7 +234,7 @@ public class Main extends Activity {
                         cV);
             }//for
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 
