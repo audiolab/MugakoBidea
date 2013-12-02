@@ -5,6 +5,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.DownloadManager;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -71,6 +75,7 @@ public class Walks extends Activity {
                             String filename = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
                             Uri downloadedUri = Uri.parse(c.getString(c.getColumnIndex(DownloadManager.COLUMN_URI)));
                             unZipDownloadedWalk(filename, downloadedUri.getLastPathSegment());
+                            notifyDownloadFinish();
                         }
                     }
                 }
@@ -215,6 +220,7 @@ public class Walks extends Activity {
         //Si el paseo se tiene que descargar, voy a ejecutar el async de descarga de los archivos.
         String status = cursor.getString(cursor.getColumnIndex(WalkContract.WalkEntry.COLUMN_NAME_WALK_STATUS));
         String id = cursor.getString(cursor.getColumnIndex(WalkContract.WalkEntry.COLUMN_NAME_WALK_ID));
+        String name = cursor.getString(cursor.getColumnIndex(WalkContract.WalkEntry.COLUMN_NAME_WALK_NAME));
         if (("NEW".equals(status) || "UPDATE".equals(status)) && isExternalStorageWritable()){
             //Significa que hay que descargar el paseo, así que cojo el id y se lo envío a la rutina de descarga
             //Chequear que puedo escribir en el disco externo.
@@ -225,7 +231,7 @@ public class Walks extends Activity {
             dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             DownloadManager.Request request = new DownloadManager.Request(
                     Uri.parse(pref_url + "/soundwalk/descarga/" + id));
-            request.setTitle("MugakoBidea");
+            request.setTitle(name);
             enqueue = dm.enqueue(request);
             Context context = getApplicationContext();
             //TODO: Pasar textos como String
@@ -243,6 +249,37 @@ public class Walks extends Activity {
                     .commit();
             detailWalk = id;
         }
+    }
+
+    private void notifyDownloadFinish(){
+        //TODO: Poner los textos en Strings
+        Notification.Builder mBuilder =
+                new Notification.Builder(this)
+                        .setSmallIcon(R.drawable.icono)
+                        .setContentTitle("Mugako Bidea")
+                        .setContentText("Nuevos paseos descargados");
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, Walks.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(Walks.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(3, mBuilder.build());
     }
 
 
