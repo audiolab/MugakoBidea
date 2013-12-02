@@ -1,0 +1,7 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+    <string name="setting_category_url">Provider</string>
+    <string name="setting_url">Walks provider url</string>
+    <string name="setting_url_default">http://www.mugakobidea.com</string>
+
+</resources>

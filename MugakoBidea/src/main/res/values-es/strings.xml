@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mugako Bidea</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="gps_dialog">Active GPS para una ubicación más precisa.</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="activar">Activar</string>
+    <string name="title_item_list">Elementos</string>
+    <string name="title_item_detail">Detalle Elemento</string>
+    <string name="title_activity_walks">Paseos</string>
+    <string name="no_walks">No hay paseos disponibles</string>
+    <string name="title_activity_walking">Paseando</string>
+    <string name="conecta_cascos">Por favor, conecta los auriculares para poder empezar el paseo.</string>
+    <string name="borrar_paseo">¿Borrar el paseo seleccionado?</string>
+    <string name="borrar">Borrar</string>
+</resources>
