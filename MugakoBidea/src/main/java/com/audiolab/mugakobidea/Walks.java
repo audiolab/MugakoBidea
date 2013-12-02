@@ -69,9 +69,8 @@ public class Walks extends Activity {
                         int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                         if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
                             String filename = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
-                            String title = c.getString(c.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                            //TODO: Cambiar para leer el id de la URI de descarga del archivo. El título sólo funciona para 1 descarga a la vez.
-                            unZipDownloadedWalk(filename, title);
+                            Uri downloadedUri = Uri.parse(c.getString(c.getColumnIndex(DownloadManager.COLUMN_URI)));
+                            unZipDownloadedWalk(filename, downloadedUri.getLastPathSegment());
                         }
                     }
                 }
@@ -167,6 +166,7 @@ public class Walks extends Activity {
             f.refresh();
         }
         Context context = getApplicationContext();
+        //TODO: Pasar textos como String
         CharSequence text = "Paseo eliminado";
         int duration = Toast.LENGTH_LONG;
 
@@ -225,8 +225,15 @@ public class Walks extends Activity {
             dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             DownloadManager.Request request = new DownloadManager.Request(
                     Uri.parse(pref_url + "/soundwalk/descarga/" + id));
-            request.setTitle(id);
+            request.setTitle("MugakoBidea");
             enqueue = dm.enqueue(request);
+            Context context = getApplicationContext();
+            //TODO: Pasar textos como String
+            CharSequence text = "Descargando paseo";
+            int duration = Toast.LENGTH_LONG;
+
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
 
         }else{
             //Abrimos el detalle
