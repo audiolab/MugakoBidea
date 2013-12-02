@@ -19,12 +19,13 @@ public class ThumbFragment extends ListFragment {
 
     private WalksOpenHelper wDB;
     private Cursor cursor;
+    private WalksAdapter wAd;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         cursor = loadDB();
-        WalksAdapter wAd = new WalksAdapter(getActivity(), cursor, false);
+        wAd = new WalksAdapter(getActivity(), cursor, false);
         setListAdapter(wAd);
     }
 
@@ -36,6 +37,11 @@ public class ThumbFragment extends ListFragment {
         ((Walks)getActivity()).walkSelected(cursor);
     }
 
+    public void refresh(){
+        cursor = loadDB();
+        wAd.changeCursor(cursor);
+        wAd.notifyDataSetChanged();
+    }
 
     @Override
     public void onStart() {

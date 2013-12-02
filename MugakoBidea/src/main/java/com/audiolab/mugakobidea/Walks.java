@@ -1,14 +1,10 @@
 package com.audiolab.mugakobidea;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.DownloadManager;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,7 +15,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -28,22 +23,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.ref.WeakReference;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -84,6 +70,7 @@ public class Walks extends Activity {
                         if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
                             String filename = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
                             String title = c.getString(c.getColumnIndex(DownloadManager.COLUMN_TITLE));
+                            //TODO: Cambiar para leer el id de la URI de descarga del archivo. El título sólo funciona para 1 descarga a la vez.
                             unZipDownloadedWalk(filename, title);
                         }
                     }
@@ -177,8 +164,7 @@ public class Walks extends Activity {
 
         if ((f != null)){
             Log.d("AREAGO", "Hay que actualizar");
-            WalksAdapter wAd = (WalksAdapter) f.getListAdapter();
-            wAd.notifyDataSetChanged();
+            f.refresh();
         }
         Context context = getApplicationContext();
         CharSequence text = "Paseo eliminado";
@@ -218,8 +204,9 @@ public class Walks extends Activity {
 
         if ((f != null)){
             Log.d("AREAGO", "Hay que actualizar");
-            WalksAdapter wAd = (WalksAdapter) f.getListAdapter();
-            wAd.notifyDataSetChanged();
+            //WalksAdapter wAd = (WalksAdapter) f.getListAdapter();
+            f.refresh();
+            //wAd.notifyDataSetChanged();
         }
 
     }
