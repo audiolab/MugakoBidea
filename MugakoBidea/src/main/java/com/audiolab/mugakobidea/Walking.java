@@ -1,9 +1,7 @@
 package com.audiolab.mugakobidea;
 
 import android.app.Activity;
-import android.app.ActionBar;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,12 +21,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
 
 
-public class Walking extends Activity{
+public class Walking extends Activity {
 
     private WalksOpenHelper wDB;
     private Cursor cursor;
@@ -36,10 +33,8 @@ public class Walking extends Activity{
     private LocationManager lManager;
     private LocationListener lListener;
     private Paseo paseo;
-
     private WalkingFragment frg;
     private MusicIntentReceiver myReceiver;
-
     private boolean ready = false;
     private boolean playing = false;
 
@@ -51,17 +46,17 @@ public class Walking extends Activity{
         mID = getIntent().getStringExtra("wID");
         cursor = loadWalk();
 
-        AudioManager am = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         myReceiver = new MusicIntentReceiver();
 
-        if(!am.isWiredHeadsetOn()){
+        if (!am.isWiredHeadsetOn()) {
             if (savedInstanceState == null) {
                 getFragmentManager().beginTransaction()
                         .add(R.id.walking_container, new CascosFragment())
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .commit();
             }
-        }else{
+        } else {
             ready = true;
             if (savedInstanceState == null) {
                 getFragmentManager().beginTransaction()
@@ -71,7 +66,7 @@ public class Walking extends Activity{
             }
             paseo = new Paseo(mID, this);
             String puntosJSON = paseo.loadJSONFile();
-            if(puntosJSON != null){
+            if (puntosJSON != null) {
                 paseo.create_points(puntosJSON);
             }
         }
@@ -80,7 +75,7 @@ public class Walking extends Activity{
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("AREAGO","onStart");
+        Log.d("AREAGO", "onStart");
         lManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         lListener = new PaseoLocationListener(paseo);
         Criteria crit = new Criteria();
@@ -91,36 +86,35 @@ public class Walking extends Activity{
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("AREAGO","onResume");
-
+        Log.d("AREAGO", "onResume");
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
-        if( myReceiver != null ) registerReceiver(myReceiver, filter);
+        if (myReceiver != null) registerReceiver(myReceiver, filter);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if(ready){
+        if (ready) {
             this.paseo.pause();
             this.paseo.stop();
             pararGPS();
         }
     }
 
-    public void playPaseo(View v){
-            if(!this.playing){
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.walking_container, new WalkingFragment())
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .commit();
-                this.playing = true;
-                arrancarGPS();
-                this.paseo.play();
-            }
+    public void playPaseo(View v) {
+        if (!this.playing) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.walking_container, new WalkingFragment())
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
+            this.playing = true;
+            arrancarGPS();
+            this.paseo.play();
+        }
     }
 
-    public void pausePaseo(View v){
-        if(this.playing){
+    public void pausePaseo(View v) {
+        if (this.playing) {
             getFragmentManager().beginTransaction()
                     .replace(R.id.walking_container, new PausedFragment())
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
@@ -130,12 +124,12 @@ public class Walking extends Activity{
         }
     }
 
-    private void arrancarGPS(){
+    private void arrancarGPS() {
         lManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, lListener);
         this.paseo.play();
     }
 
-    private void pararGPS(){
+    private void pararGPS() {
         try {
             lManager.removeUpdates(lListener);
             this.paseo.pause();
@@ -146,7 +140,7 @@ public class Walking extends Activity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.walking, menu);
         return true;
@@ -164,8 +158,7 @@ public class Walking extends Activity{
         return super.onOptionsItemSelected(item);
     }
 
-
-    public Cursor loadWalk(){
+    public Cursor loadWalk() {
 
         wDB = new WalksOpenHelper(this);
 
@@ -182,7 +175,7 @@ public class Walking extends Activity{
         };
 
         String selection = WalkContract.WalkEntry.COLUMN_NAME_WALK_ID + " == ?";
-        String[] selectionArgs = { String.valueOf(mID) };
+        String[] selectionArgs = {String.valueOf(mID)};
 
         Cursor c = rDB.query(
                 WalkContract.WalkEntry.TABLE_NAME,  // The table to query
@@ -199,18 +192,17 @@ public class Walking extends Activity{
         return c;
     }
 
-    public void cascosConectados()
-    {
+    public void cascosConectados() {
 
         ready = true;
         getFragmentManager().beginTransaction()
-                    .replace(R.id.walking_container, new PausedFragment())
-                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                    .commit();
+                .replace(R.id.walking_container, new PausedFragment())
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .commit();
 
         paseo = new Paseo(mID, this);
         String puntosJSON = paseo.loadJSONFile();
-        if(puntosJSON != null){
+        if (puntosJSON != null) {
             paseo.create_points(puntosJSON);
         }
         this.playing = false;
@@ -218,7 +210,7 @@ public class Walking extends Activity{
         this.paseo.pause();
     }
 
-    public void cascosDesconectados(){
+    public void cascosDesconectados() {
         if (!ready) return;
 
         ready = false;
@@ -234,48 +226,35 @@ public class Walking extends Activity{
 
     }
 
-
     private class PaseoLocationListener implements LocationListener {
 
 
         private WeakReference<Paseo> walk;
-
-        public void onLocationChanged(Location location) {
-            if (location != null) {
-                //((TextView)findViewById(R.id.logger)).append(" Posición: " + location.getLatitude() + " / " + location.getLongitude() + " / " + location.getAccuracy());
-                //((TextView)findViewById(R.id.status_gps)).setVisibility(View.GONE);
-                SoundPoint nl = new SoundPoint(location);
-                Log.d("AREAGO","Location changed");
-
-                // Miramos si el punto actual está dentro del radio de acción de algun punto del paseo.
-                // Si nos hemos movido
-                Paseo w = walk.get();
-                if(w != null){
-                    w.check_collisions(nl);
-                }
-            }
-        }
 
         private PaseoLocationListener(Paseo wl) {
             walk = new WeakReference<Paseo>(wl);
 
         }
 
+        public void onLocationChanged(Location location) {
+            if (location != null) {
+                SoundPoint nl = new SoundPoint(location);
+                Log.d("AREAGO", "Location changed");
+                Paseo w = walk.get();
+                if (w != null) {
+                    w.check_collisions(nl);
+                }
+            }
+        }
 
         public void onProviderDisabled(String provider) {
-            //((TextView)findViewById(R.id.logger)).append(provider + " desconectado");
-            Log.d("AREAGO","GPS Disable");
-            //((TextView)findViewById(R.id.logger)).setText("Dispositivo GPS desactivado");
-            //((TextView)findViewById(R.id.status_gps)).setVisibility(View.VISIBLE);
+            Log.d("AREAGO", "GPS Disable");
             Paseo w = walk.get();
             if (w != null) w.location_pause();
         }
 
         public void onProviderEnabled(String provider) {
-            //((TextView)findViewById(R.id.logger)).append("GPS Conectado: " + provider);
-            //((TextView)findViewById(R.id.status_gps)).setText("Dispositivo GPS activado");
-            //((TextView)findViewById(R.id.status_gps)).setVisibility(View.VISIBLE);
-            Log.d("AREAGO","GPS Enabled");
+            Log.d("AREAGO", "GPS Enabled");
         }
 
         public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -283,30 +262,27 @@ public class Walking extends Activity{
             Paseo w = walk.get();
             switch (status) {
                 case android.location.LocationProvider.AVAILABLE:
-                    st=" Disponible";
+                    st = " Disponible";
                     break;
                 case android.location.LocationProvider.OUT_OF_SERVICE:
-                    st=" no disponible";
+                    st = " no disponible";
                     if (w != null) w.location_pause();
-                    Log.d("AREAGO","Pausamos el paseo por fuera de servicio");
+                    Log.d("AREAGO", "Pausamos el paseo por fuera de servicio");
                     break;
                 case android.location.LocationProvider.TEMPORARILY_UNAVAILABLE:
-                    st=" Temporalmente no disponible";
-                    if(w != null) w.location_pause();
-                    Log.d("AREAGO","Pausamos el paseo por temporalmente no disponible");
+                    st = " Temporalmente no disponible";
+                    if (w != null) w.location_pause();
+                    Log.d("AREAGO", "Pausamos el paseo por temporalmente no disponible");
                     break;
             }
-            //((TextView)findViewById(R.id.logger)).append("GPS Status:" + st);
-            Log.d("AREAGO","GPS Status: " + st);
-            //((TextView)findViewById(R.id.status_gps)).setText(getString(R.string.dipositivo_gps)+st);
-            //((TextView)findViewById(R.id.status_gps)).setVisibility(View.VISIBLE);
-            Log.d("AREAGO","Status" + st);
+
         }
 
     }
 
     private class MusicIntentReceiver extends BroadcastReceiver {
-        @Override public void onReceive(Context context, Intent intent) {
+        @Override
+        public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
                 int state = intent.getIntExtra("state", -1);
                 switch (state) {
@@ -338,7 +314,7 @@ public class Walking extends Activity{
 
     }
 
-    private class PausedFragment extends Fragment{
+    private class PausedFragment extends Fragment {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_paused, container, false);
