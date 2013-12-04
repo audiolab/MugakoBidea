@@ -88,8 +88,8 @@ public class Walks extends Activity {
 
     }
 
-    public void unZipDownloadedWalk(String zipFile, String title){
-        if(!isExternalStorageWritable()) return;
+    public void unZipDownloadedWalk(String zipFile, String title) {
+        if (!isExternalStorageWritable()) return;
         try {
             //Creamos el directorio con el ID donde se decargar el archivo
             File externalDir = getExternalFilesDir(null); // The external directory;
@@ -101,7 +101,7 @@ public class Walks extends Activity {
             ZipEntry ze = zin.getNextEntry();
 
             while (ze != null) {
-                String filePath = pathWalk+ File.separator + ze.getName();
+                String filePath = pathWalk + File.separator + ze.getName();
                 if (!ze.isDirectory()) {
                     // if the entry is a file, extracts it
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(filePath));
@@ -125,16 +125,18 @@ public class Walks extends Activity {
             zF.delete();
 
         } catch (Exception e) {
-            Log.e("AREAGO","ERROR al descargar paseo" + e);
+            Log.e("AREAGO", "ERROR al descargar paseo" + e);
         }
-        Log.e("AREAGO","Paseo descargado");
+        Log.e("AREAGO", "Paseo descargado");
 
-    };
+    }
 
-    public void walkRemove(Cursor cursor){
+    ;
+
+    public void walkRemove(Cursor cursor) {
         Log.d("AREAGO", "BORARRA PASEOOO");
         String id = cursor.getString(cursor.getColumnIndex(WalkContract.WalkEntry.COLUMN_NAME_WALK_ID));
-        if (isExternalStorageWritable()){
+        if (isExternalStorageWritable()) {
             //Significa que hay que descargar el paseo, así que cojo el id y se lo envío a la rutina de descarga
             //Chequear que puedo escribir en el disco externo.
             DialogFragment newFragment = new DeleteWalkDialogFragment(id);
@@ -150,13 +152,13 @@ public class Walks extends Activity {
         fileOrDirectory.delete();
     }
 
-    public void walkConfirmedRemove(String id){
+    public void walkConfirmedRemove(String id) {
         WalksOpenHelper wDB;
         wDB = new WalksOpenHelper(this);
         SQLiteDatabase db = wDB.getWritableDatabase();
 
         String selection = WalkContract.WalkEntry.COLUMN_NAME_WALK_ID + " LIKE ?";
-        String[] selectionArgs = { String.valueOf(id) };
+        String[] selectionArgs = {String.valueOf(id)};
 
         db.delete(WalkContract.WalkEntry.TABLE_NAME, selection, selectionArgs);
         File externalDir = getExternalFilesDir(null); // The external directory;
@@ -164,9 +166,9 @@ public class Walks extends Activity {
         DeleteRecursive(new File(pathWalk));
 
 
-        ThumbFragment f = ((ThumbFragment)getFragmentManager().findFragmentByTag("listado"));
+        ThumbFragment f = ((ThumbFragment) getFragmentManager().findFragmentByTag("listado"));
 
-        if ((f != null)){
+        if ((f != null)) {
             Log.d("AREAGO", "Hay que actualizar");
             f.refresh();
         }
@@ -179,7 +181,7 @@ public class Walks extends Activity {
         toast.show();
     }
 
-    public void playClick(View v){
+    public void playClick(View v) {
         Log.d("AREAGO", "Hemos hehco click!!!");
         Log.d("AREAGO", "VIEW: " + v.toString());
         Intent i = new Intent(this, Walking.class);
@@ -187,7 +189,7 @@ public class Walks extends Activity {
         startActivity(i);
     }
 
-    public void finishedDownload(String wID){
+    public void finishedDownload(String wID) {
 
         WalksOpenHelper wDB;
         wDB = new WalksOpenHelper(this);
@@ -197,7 +199,7 @@ public class Walks extends Activity {
 
         // Which row to update, based on the ID
         String selection = WalkContract.WalkEntry.COLUMN_NAME_WALK_ID + " LIKE ?";
-        String[] selectionArgs = { String.valueOf(wID) };
+        String[] selectionArgs = {String.valueOf(wID)};
 
         int count = db.update(
                 WalkContract.WalkEntry.TABLE_NAME,
@@ -205,9 +207,9 @@ public class Walks extends Activity {
                 selection,
                 selectionArgs);
 
-        ThumbFragment f = ((ThumbFragment)getFragmentManager().findFragmentByTag("listado"));
+        ThumbFragment f = ((ThumbFragment) getFragmentManager().findFragmentByTag("listado"));
 
-        if ((f != null)){
+        if ((f != null)) {
             Log.d("AREAGO", "Hay que actualizar");
             //WalksAdapter wAd = (WalksAdapter) f.getListAdapter();
             f.refresh();
@@ -216,12 +218,12 @@ public class Walks extends Activity {
 
     }
 
-    public void walkSelected(Cursor cursor){
+    public void walkSelected(Cursor cursor) {
         //Si el paseo se tiene que descargar, voy a ejecutar el async de descarga de los archivos.
         String status = cursor.getString(cursor.getColumnIndex(WalkContract.WalkEntry.COLUMN_NAME_WALK_STATUS));
         String id = cursor.getString(cursor.getColumnIndex(WalkContract.WalkEntry.COLUMN_NAME_WALK_ID));
         String name = cursor.getString(cursor.getColumnIndex(WalkContract.WalkEntry.COLUMN_NAME_WALK_NAME));
-        if (("NEW".equals(status) || "UPDATE".equals(status)) && isExternalStorageWritable()){
+        if (("NEW".equals(status) || "UPDATE".equals(status)) && isExternalStorageWritable()) {
             //Significa que hay que descargar el paseo, así que cojo el id y se lo envío a la rutina de descarga
             //Chequear que puedo escribir en el disco externo.
 
@@ -241,7 +243,7 @@ public class Walks extends Activity {
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
 
-        }else{
+        } else {
             //Abrimos el detalle
             getFragmentManager().beginTransaction()
                     .replace(R.id.walks_container, new WalkDetail(id), "detalle")
@@ -251,7 +253,7 @@ public class Walks extends Activity {
         }
     }
 
-    private void notifyDownloadFinish(){
+    private void notifyDownloadFinish() {
         //TODO: Poner los textos en Strings
         Notification.Builder mBuilder =
                 new Notification.Builder(this)
@@ -282,8 +284,6 @@ public class Walks extends Activity {
         mNotificationManager.notify(3, mBuilder.build());
     }
 
-
-
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         boolean r = false;
@@ -294,10 +294,9 @@ public class Walks extends Activity {
         return r;
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.walks, menu);
         return true;

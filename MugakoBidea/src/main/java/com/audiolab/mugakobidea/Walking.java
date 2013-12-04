@@ -40,7 +40,7 @@ public class Walking extends Activity{
     private MusicIntentReceiver myReceiver;
 
     private boolean ready = false;
-
+    private String state = "PAUSED";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +75,6 @@ public class Walking extends Activity{
                 paseo.create_points(puntosJSON);
             }
         }
-
     }
 
     @Override
