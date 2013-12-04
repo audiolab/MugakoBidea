@@ -3,6 +3,7 @@ package com.audiolab.mugakobidea;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -40,7 +41,7 @@ public class Walking extends Activity{
     private MusicIntentReceiver myReceiver;
 
     private boolean ready = false;
-    private String state = "PAUSED";
+    private boolean playing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +63,9 @@ public class Walking extends Activity{
             }
         }else{
             ready = true;
-            frg = new WalkingFragment();
             if (savedInstanceState == null) {
                 getFragmentManager().beginTransaction()
-                        .add(R.id.walking_container, frg)
+                        .add(R.id.walking_container, new PausedFragment(), "paused")
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .commit();
             }
@@ -82,7 +82,7 @@ public class Walking extends Activity{
         super.onStart();
         Log.d("AREAGO","onStart");
         lManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        lListener = new PaseoLocationListener(frg, paseo);
+        lListener = new PaseoLocationListener(paseo);
         Criteria crit = new Criteria();
         crit.setAccuracy(Criteria.ACCURACY_FINE);
         lManager.getLastKnownLocation(lManager.getBestProvider(crit, true));
@@ -92,9 +92,7 @@ public class Walking extends Activity{
     protected void onResume() {
         super.onResume();
         Log.d("AREAGO","onResume");
-        if(ready){
-            arrancarGPS();
-        }
+
         IntentFilter filter = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
         if( myReceiver != null ) registerReceiver(myReceiver, filter);
     }
@@ -109,13 +107,38 @@ public class Walking extends Activity{
         }
     }
 
+    public void playPaseo(View v){
+            if(!this.playing){
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.walking_container, new WalkingFragment())
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .commit();
+                this.playing = true;
+                arrancarGPS();
+                this.paseo.play();
+            }
+    }
+
+    public void pausePaseo(View v){
+        if(this.playing){
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.walking_container, new PausedFragment())
+                    .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                    .commit();
+            this.playing = false;
+            this.paseo.pause();
+        }
+    }
+
     private void arrancarGPS(){
         lManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, lListener);
+        this.paseo.play();
     }
 
     private void pararGPS(){
         try {
             lManager.removeUpdates(lListener);
+            this.paseo.pause();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
@@ -178,10 +201,10 @@ public class Walking extends Activity{
 
     public void cascosConectados()
     {
-        frg = new WalkingFragment();
+
         ready = true;
         getFragmentManager().beginTransaction()
-                    .replace(R.id.walking_container, frg)
+                    .replace(R.id.walking_container, new PausedFragment())
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                     .commit();
 
@@ -190,7 +213,9 @@ public class Walking extends Activity{
         if(puntosJSON != null){
             paseo.create_points(puntosJSON);
         }
+        this.playing = false;
         arrancarGPS();
+        this.paseo.pause();
     }
 
     public void cascosDesconectados(){
@@ -204,6 +229,7 @@ public class Walking extends Activity{
                 .commit();
 
         this.paseo.pause();
+        this.playing = false;
         pararGPS();
 
     }
@@ -211,12 +237,12 @@ public class Walking extends Activity{
 
     private class PaseoLocationListener implements LocationListener {
 
-        private WeakReference<WalkingFragment> wFrg;
+
         private WeakReference<Paseo> walk;
 
         public void onLocationChanged(Location location) {
             if (location != null) {
-                ((TextView)findViewById(R.id.logger)).append(" Posición: " + location.getLatitude() + " / " + location.getLongitude() + " / " + location.getAccuracy());
+                //((TextView)findViewById(R.id.logger)).append(" Posición: " + location.getLatitude() + " / " + location.getLongitude() + " / " + location.getAccuracy());
                 //((TextView)findViewById(R.id.status_gps)).setVisibility(View.GONE);
                 SoundPoint nl = new SoundPoint(location);
                 Log.d("AREAGO","Location changed");
@@ -230,14 +256,14 @@ public class Walking extends Activity{
             }
         }
 
-        private PaseoLocationListener(WalkingFragment frg, Paseo wl) {
-            wFrg = new WeakReference<WalkingFragment>(frg);
+        private PaseoLocationListener(Paseo wl) {
             walk = new WeakReference<Paseo>(wl);
 
         }
 
+
         public void onProviderDisabled(String provider) {
-            ((TextView)findViewById(R.id.logger)).append(provider + " desconectado");
+            //((TextView)findViewById(R.id.logger)).append(provider + " desconectado");
             Log.d("AREAGO","GPS Disable");
             //((TextView)findViewById(R.id.logger)).setText("Dispositivo GPS desactivado");
             //((TextView)findViewById(R.id.status_gps)).setVisibility(View.VISIBLE);
@@ -246,7 +272,7 @@ public class Walking extends Activity{
         }
 
         public void onProviderEnabled(String provider) {
-            ((TextView)findViewById(R.id.logger)).append("GPS Conectado: " + provider);
+            //((TextView)findViewById(R.id.logger)).append("GPS Conectado: " + provider);
             //((TextView)findViewById(R.id.status_gps)).setText("Dispositivo GPS activado");
             //((TextView)findViewById(R.id.status_gps)).setVisibility(View.VISIBLE);
             Log.d("AREAGO","GPS Enabled");
@@ -270,7 +296,7 @@ public class Walking extends Activity{
                     Log.d("AREAGO","Pausamos el paseo por temporalmente no disponible");
                     break;
             }
-            ((TextView)findViewById(R.id.logger)).append("GPS Status:" + st);
+            //((TextView)findViewById(R.id.logger)).append("GPS Status:" + st);
             Log.d("AREAGO","GPS Status: " + st);
             //((TextView)findViewById(R.id.status_gps)).setText(getString(R.string.dipositivo_gps)+st);
             //((TextView)findViewById(R.id.status_gps)).setVisibility(View.VISIBLE);
@@ -299,7 +325,7 @@ public class Walking extends Activity{
         }
     }
 
-    public class CascosFragment extends Fragment {
+    private class CascosFragment extends Fragment {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -311,5 +337,30 @@ public class Walking extends Activity{
 
 
     }
+
+    private class PausedFragment extends Fragment{
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_paused, container, false);
+            return rootView;
+        }
+    }
+
+    private class WalkingFragment extends Fragment {
+
+        public WalkingFragment() {
+
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_walking, container, false);
+            return rootView;
+        }
+
+
+    }
+
 
 }

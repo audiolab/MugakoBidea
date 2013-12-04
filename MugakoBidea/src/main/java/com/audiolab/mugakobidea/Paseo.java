@@ -44,6 +44,7 @@ public class Paseo {
     private ArrayList<SoundPoint> puntos = new ArrayList<SoundPoint>();
     private int layer = 0; // por defecto el paseo se inicia en la layer 0
     private Vibrator v;
+    private boolean paused = true;
 
     private WeakReference<Walking> wAc;
 
@@ -186,6 +187,7 @@ public class Paseo {
             this.puntos.get(i).stopSoundFile();
             Log.d("AREAGO","Parando punto "+i);
         }
+        this.paused = true;
     }
 
     public void pause() {
@@ -197,6 +199,12 @@ public class Paseo {
             }
             Log.d("AREAGO","Pausando punto "+i);
         }
+        this.paused = true;
+
+    }
+
+    public void play(){
+        this.paused = false;
     }
 
     public void location_pause() {
@@ -280,6 +288,9 @@ public class Paseo {
     public void check_collisions(Location l) {
         // Recorre los puntos del mapa y revisa si estamos dentro del radio de uno de ellos
         String p = "";
+
+        if (this.paused) return;
+
         for (int i = 0; i<this.puntos.size(); i++){
             int type = this.puntos.get(i).getType();
             int lay = this.puntos.get(i).getLayer();
