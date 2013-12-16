@@ -49,6 +49,12 @@ public class Walking extends Activity {
         AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         myReceiver = new MusicIntentReceiver();
 
+        this.paseo = new Paseo(mID, this);
+        String puntosJSON = paseo.loadJSONFile();
+        if (puntosJSON != null) {
+            this.paseo.create_points(puntosJSON);
+        }
+
         if (!am.isWiredHeadsetOn()) {
             if (savedInstanceState == null) {
                 getFragmentManager().beginTransaction()
@@ -64,11 +70,6 @@ public class Walking extends Activity {
                         .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                         .commit();
             }
-            paseo = new Paseo(mID, this);
-            String puntosJSON = paseo.loadJSONFile();
-            if (puntosJSON != null) {
-                paseo.create_points(puntosJSON);
-            }
         }
     }
 
@@ -77,7 +78,7 @@ public class Walking extends Activity {
         super.onStart();
         Log.d("AREAGO", "onStart");
         lManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        lListener = new PaseoLocationListener(paseo);
+        lListener = new PaseoLocationListener(this.paseo);
         Criteria crit = new Criteria();
         crit.setAccuracy(Criteria.ACCURACY_FINE);
         lManager.getLastKnownLocation(lManager.getBestProvider(crit, true));
@@ -95,9 +96,9 @@ public class Walking extends Activity {
     protected void onStop() {
         super.onStop();
         if (ready) {
-            this.paseo.pause();
-            this.paseo.stop();
-            pararGPS();
+           // this.paseo.pause();
+           // this.paseo.stop();
+           // pararGPS();
         }
     }
 
@@ -200,11 +201,6 @@ public class Walking extends Activity {
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .commit();
 
-        paseo = new Paseo(mID, this);
-        String puntosJSON = paseo.loadJSONFile();
-        if (puntosJSON != null) {
-            paseo.create_points(puntosJSON);
-        }
         this.playing = false;
         arrancarGPS();
         this.paseo.pause();
@@ -232,7 +228,7 @@ public class Walking extends Activity {
         private WeakReference<Paseo> walk;
 
         private PaseoLocationListener(Paseo wl) {
-            walk = new WeakReference<Paseo>(wl);
+            this.walk = new WeakReference<Paseo>(wl);
 
         }
 
@@ -240,8 +236,9 @@ public class Walking extends Activity {
             if (location != null) {
                 SoundPoint nl = new SoundPoint(location);
                 Log.d("AREAGO", "Location changed");
-                Paseo w = walk.get();
+                Paseo w = this.walk.get();
                 if (w != null) {
+                    Log.d("AREAGO", "vamos a chekear");
                     w.check_collisions(nl);
                 }
             }

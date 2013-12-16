@@ -205,6 +205,7 @@ public class Paseo {
 
     public void play(){
         this.paused = false;
+        Log.d("AREAGO", "Hemos hecho play");
     }
 
     public void location_pause() {
@@ -288,8 +289,8 @@ public class Paseo {
     public void check_collisions(Location l) {
         // Recorre los puntos del mapa y revisa si estamos dentro del radio de uno de ellos
         String p = "";
-
-        if (this.paused) return;
+        Log.d("AREAGO", "Estado: " + this.paused);
+        if (this.paused) {return;}
 
         for (int i = 0; i<this.puntos.size(); i++){
             int type = this.puntos.get(i).getType();
