@@ -8,7 +8,9 @@ import android.app.DownloadManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
+//import android.app.TaskStackBuilder;
+
+import android.support.v4.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -281,7 +283,7 @@ public class Walks extends Activity {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         // mId allows you to update the notification later on.
-        mNotificationManager.notify(3, mBuilder.build());
+        mNotificationManager.notify(3, mBuilder.getNotification());
     }
 
     public boolean isExternalStorageWritable() {

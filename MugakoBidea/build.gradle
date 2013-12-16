@@ -5,6 +5,8 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:0.6.+'
     }
+
+
 }
 apply plugin: 'android'
 
@@ -12,13 +14,16 @@ repositories {
     mavenCentral()
 }
 
+dependencies {
+    compile "com.android.support:support-v4:18.0.+"
+}
 android {
-    compileSdkVersion 18
+    compileSdkVersion 15
     buildToolsVersion '18.1.0'
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 18
+        minSdkVersion 14
+        targetSdkVersion 15
     }
 
     buildTypes {
@@ -29,6 +34,3 @@ android {
     }
 }
 
-dependencies {
-    compile 'com.google.android.gms:play-services:4.0.30'
-}
